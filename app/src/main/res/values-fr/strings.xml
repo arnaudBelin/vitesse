@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">vitesse</string>
+    <string name="search_placeholder">Rechercher un candidat</string>
+</resources>
