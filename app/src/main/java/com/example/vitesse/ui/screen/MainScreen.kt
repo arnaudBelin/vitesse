@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.vitesse.ui.component.NavigationTab
 import com.example.vitesse.ui.component.SimpleSearchBar
 
 @Composable
@@ -26,9 +27,9 @@ fun MainScreen() {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(colorScheme.background)
                 .padding(innerPadding)
         ) {
+            NavigationTab()
 
         }
     }
