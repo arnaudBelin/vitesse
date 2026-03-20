@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CandidateDao {
-    @Query("SELECT * FROM Candidate WHERE deleted_at IS NULL ORDER BY created_at DESC")
+    @Query("SELECT * FROM Candidate ORDER BY created_at DESC")
     fun getAllCandidates(): Flow<List<Candidate>>
 
-    @Query("SELECT * FROM Candidate WHERE id = :id AND deleted_at IS NULL")
-    suspend fun getCandidateById(id: Int): Candidate
+    @Query("SELECT * FROM Candidate WHERE id = :id")
+    suspend fun getCandidateById(id: Int): Candidate?
 
     @Upsert
     suspend fun addOrUpdateCandidate(candidate: Candidate)

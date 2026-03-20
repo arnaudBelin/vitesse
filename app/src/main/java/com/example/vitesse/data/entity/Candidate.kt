@@ -27,6 +27,4 @@ data class Candidate(
     val isFavorite: Boolean = false,
     @ColumnInfo(name = "created_at")
     val createdAt: Instant,
-    @ColumnInfo(name = "deleted_at")
-    val deletedAt: Instant? = null,
 )
