@@ -28,6 +28,10 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    init {
+        fetchCandidates()
+    }
+
 
 
 }

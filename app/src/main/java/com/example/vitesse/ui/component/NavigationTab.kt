@@ -7,50 +7,36 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.vitesse.R
-
-enum class Destination(
-    val route: String,
-    val label: Int,
-) {
-    ALL(
-        "all",
-        R.string.tab_all
-    ),
-    FAV(
-        "favorites",
-        R.string.tab_fav
-    ),
-}
+import com.example.vitesse.data.entity.Candidate
+import com.example.vitesse.ui.navigation.Destination
+import com.example.vitesse.ui.screen.CandidatesScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavigationTab(modifier: Modifier = Modifier) {
+fun NavigationTab(
+    modifier: Modifier = Modifier,
+    selectedDestination: Destination,
+    onDestinationSelected: (Destination) -> Unit,
+    candidates: List<Candidate>
+) {
     val navController = rememberNavController()
-    val startDestination = Destination.ALL
-    var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
 
     Scaffold(
         modifier = modifier,
         topBar = {
-            PrimaryTabRow(selectedTabIndex = selectedDestination) {
+            PrimaryTabRow(selectedTabIndex = selectedDestination.ordinal) {
                 Destination.entries.forEachIndexed { index, destination ->
                     Tab(
-                        selected = selectedDestination == index,
+                        selected = selectedDestination.ordinal == index,
                         onClick = {
                             navController.navigate(route = destination.route)
-                            selectedDestination = index
+                            onDestinationSelected(destination)
                         },
                         text = {
                             Text(
@@ -64,43 +50,26 @@ fun NavigationTab(modifier: Modifier = Modifier) {
             }
         }
     ) { contentPadding ->
-        AppNavHost(
-            navController = navController,
-            startDestination = startDestination,
+        NavHost(
+            navController,
+            startDestination = Destination.ALL.route,
             modifier = Modifier.padding(contentPadding)
-        )
-    }
-}
+        ) {
+            Destination.entries.forEach { destination ->
 
-@Composable
-fun AppNavHost(
-    navController: NavHostController,
-    startDestination: Destination,
-    modifier: Modifier = Modifier
-) {
-    NavHost(
-        navController,
-        startDestination = startDestination.route,
-        modifier = modifier
-    ) {
-        Destination.entries.forEach { destination ->
-            composable(destination.route) {
-                when (destination) {
-                    Destination.ALL -> Allscreen()
-                    Destination.FAV -> FavScreen()
+                composable(destination.route) {
+                    when (destination) {
+                        Destination.ALL -> CandidatesScreen(
+                            modifier = Modifier.padding(contentPadding),
+                            candidates
+                        )
+                        Destination.FAV -> CandidatesScreen(
+                            modifier = Modifier.padding(contentPadding),
+                            candidates.filter { it.isFavorite }
+                        )
+                    }
                 }
             }
         }
     }
-}
-
-
-@Composable
-fun Allscreen() {
-    Text("All")
-}
-
-@Composable
-fun FavScreen() {
-    Text("Favorites")
 }
