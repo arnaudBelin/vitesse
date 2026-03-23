@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    id("com.ncorti.ktfmt.gradle") version "0.26.0"
 }
 
 android {
@@ -43,6 +44,10 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+ktfmt {
+    kotlinLangStyle()
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -59,6 +64,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.coil.compose)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.app.cash.turbine)
