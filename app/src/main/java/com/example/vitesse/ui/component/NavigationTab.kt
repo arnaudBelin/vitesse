@@ -60,11 +60,9 @@ fun NavigationTab(
                 composable(destination.route) {
                     when (destination) {
                         Destination.ALL -> CandidatesScreen(
-                            modifier = Modifier.padding(contentPadding),
                             candidates
                         )
                         Destination.FAV -> CandidatesScreen(
-                            modifier = Modifier.padding(contentPadding),
                             candidates.filter { it.isFavorite }
                         )
                     }

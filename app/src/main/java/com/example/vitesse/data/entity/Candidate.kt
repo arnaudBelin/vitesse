@@ -19,7 +19,8 @@ data class Candidate(
     val lastName: String,
     val phone: String,
     val email: String,
-    val picture: String? = null,
+    @ColumnInfo(name = "picture_url")
+    val pictureUrl: String? = null,
     @ColumnInfo(name = "birth_date")
     val birthDate: LocalDate,
     val salary: Double? = null, // in Euros
