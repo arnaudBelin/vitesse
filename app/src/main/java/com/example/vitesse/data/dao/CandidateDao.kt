@@ -15,6 +15,9 @@ interface CandidateDao {
     @Query("SELECT * FROM Candidate WHERE id = :id")
     suspend fun getCandidateById(id: Int): Candidate?
 
+    @Query("SELECT * FROM Candidate WHERE first_name LIKE '%' || :query || '%' OR last_name LIKE '%' || :query || '%' ORDER BY created_at DESC")
+    suspend fun getCandidatesBySearch(query: String): List<Candidate>
+
     @Upsert
     suspend fun addOrUpdateCandidate(candidate: Candidate)
 

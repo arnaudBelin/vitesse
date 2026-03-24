@@ -10,18 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.vitesse.data.entity.Candidate
 import com.example.vitesse.ui.component.NavigationTab
 import com.example.vitesse.ui.component.SimpleSearchBar
 import com.example.vitesse.ui.home.MainActivityViewModel
@@ -41,13 +37,24 @@ class MainActivity : ComponentActivity() {
             VitesseTheme {
                 val startDestination = Destination.ALL
                 var selectedDestination by rememberSaveable { mutableStateOf(startDestination) }
+                val searchResults = viewModel.searchResultState.collectAsState(initial = listOf()).value
+                val textFieldSearch = remember { TextFieldState() }
 
                 Scaffold(
                     topBar = {
                         SimpleSearchBar(
-                            textFieldState = TextFieldState(),
-                            onSearch = { /* Handle search */ },
-                            searchResults = listOf("Result 1", "Result 2", "Result 3"),
+                            textFieldState = textFieldSearch,
+                            onSearch = { query ->
+                                viewModel.searchCandidates(query)
+                            },
+                            onQueryChange = { query ->
+                                viewModel.searchCandidates(query)
+                            },
+                            searchResults = searchResults,
+                            onResultClick = { candidateId ->
+                                println("Clicked candidate with ID: $candidateId")
+                                viewModel.searchCandidates("")
+                            },
                             modifier = Modifier.padding(16.dp)
                         )
                     },

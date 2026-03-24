@@ -1,6 +1,4 @@
 package com.example.vitesse.ui.component
-
-import android.text.TextUtils.replace
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,11 +7,9 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.semantics.isTraversalGroup
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.verticalScroll
@@ -23,15 +19,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.toUpperCase
 import com.example.vitesse.R
+import com.example.vitesse.data.entity.Candidate
+import java.util.Locale
+import java.util.Locale.getDefault
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +40,9 @@ import com.example.vitesse.R
 fun SimpleSearchBar(
     textFieldState: TextFieldState,
     onSearch: (String) -> Unit,
-    searchResults: List<String>,
+    onQueryChange: (String) -> Unit,
+    searchResults: List<Candidate>,
+    onResultClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Controls expansion state of the search bar
@@ -58,7 +61,10 @@ fun SimpleSearchBar(
             inputField = {
                 SearchBarDefaults.InputField(
                     query = textFieldState.text.toString(),
-                    onQueryChange = { textFieldState.edit { replace(0, length, it) } },
+                    onQueryChange = {
+                        textFieldState.edit { replace(0, length, it) }
+                        onQueryChange(it)
+                    },
                     onSearch = {
                         onSearch(textFieldState.text.toString())
                         expanded = false
@@ -83,10 +89,16 @@ fun SimpleSearchBar(
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 searchResults.forEach { result ->
                     ListItem(
-                        headlineContent = { Text(result) },
+                        headlineContent = { Text("${result.firstName} ${
+                            result.lastName.uppercase(
+                                getDefault()
+                            )
+                        }") },
                         modifier = Modifier
                             .clickable {
-                                textFieldState.edit { replace(0, length, result) }
+                                onResultClick(result.id)
+                                // reset search query and collapse search bar
+                                textFieldState.edit { replace(0, length, "") }
                                 expanded = false
                             }
                             .fillMaxWidth()
