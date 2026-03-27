@@ -1,5 +1,8 @@
 package com.example.vitesse.ui.screen
 
+import android.R.attr.data
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,6 +56,7 @@ import com.example.vitesse.ui.extension.toLocalizedDisplayDate
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +67,7 @@ fun CandidateDetailsScreen(
     onRemoveClick: () -> Unit,
     onFavoriteClick: () -> Unit,
 ) {
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TopAppBar(
@@ -161,7 +167,10 @@ fun CandidateDetailsScreen(
                     onClick = {
                         // phone call
                         val phoneNumber = candidate?.phone ?: return@CTAContent
-                        println("Initiating phone call to $phoneNumber")
+                        val intent = Intent(Intent.ACTION_DIAL).apply {
+                            data = "tel:$phoneNumber".toUri()
+                        }
+                        context.startActivity(intent)
                     }
                 )
                 CTAContent(
@@ -170,7 +179,10 @@ fun CandidateDetailsScreen(
                     onClick = {
                         // send SMS
                         val phoneNumber = candidate?.phone ?: return@CTAContent
-                        println("Initiating SMS to $phoneNumber")
+                        val intent = Intent(Intent.ACTION_SENDTO).apply {
+                            data = "smsto:$phoneNumber".toUri()
+                        }
+                        context.startActivity(intent)
                     }
                 )
                 CTAContent(
@@ -179,7 +191,10 @@ fun CandidateDetailsScreen(
                     onClick = {
                         // send email
                         val email = candidate?.email ?: return@CTAContent
-                        println("Initiating email to $email")
+                        val intent = Intent(Intent.ACTION_SENDTO).apply {
+                            data = "mailto:$email".toUri()
+                        }
+                        context.startActivity(intent)
                      }
                 )
             }
