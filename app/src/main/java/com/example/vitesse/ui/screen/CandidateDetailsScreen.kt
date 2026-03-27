@@ -1,34 +1,57 @@
 package com.example.vitesse.ui.screen
 
-import android.R.attr.contentDescription
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.automirrored.filled.Message
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Star
-import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.example.vitesse.R
 import com.example.vitesse.data.entity.Candidate
+import com.example.vitesse.ui.extension.age
 import com.example.vitesse.ui.extension.displayFirstName
 import com.example.vitesse.ui.extension.displayLastName
+import com.example.vitesse.ui.extension.toLocalizedDisplayDate
+import java.text.NumberFormat
+import java.util.Currency
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +75,7 @@ fun CandidateDetailsScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.action_back)
                         )
                     }
                 },
@@ -60,21 +83,21 @@ fun CandidateDetailsScreen(
                     IconButton(onClick = onFavoriteClick) {
                         Icon(
                             imageVector = if (candidate?.isFavorite == true) Icons.Filled.Star else Icons.Filled.StarBorder,
-                            contentDescription = "Favorite",
+                            contentDescription = stringResource(R.string.action_favorite),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
                     IconButton(onClick = onEditClick) {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
-                            contentDescription = "Edit",
+                            contentDescription = stringResource(R.string.action_edit),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
                     IconButton(onClick = onRemoveClick) {
                         Icon(
                             imageVector = Icons.Outlined.Delete,
-                            contentDescription = "Delete",
+                            contentDescription = stringResource(R.string.action_delete),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -82,14 +105,175 @@ fun CandidateDetailsScreen(
             )
         },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            candidate?.let {
-                Text(text = "Name: ${it.firstName}")
-                Text(text = "Email: ${it.email}")
-            } ?: Text(text = "Candidate not found")
+        val padding = 16.dp
+        val scrollState = rememberScrollState()
+        val salaryFormatter = NumberFormat.getCurrencyInstance().apply {
+            currency = Currency.getInstance("EUR")
+            maximumFractionDigits = 0
+        }
+        val birthdayValue = candidate?.birthDate?.let { birthDate ->
+            stringResource(
+                R.string.candidate_details_birthday_value,
+                birthDate.toLocalizedDisplayDate(),
+                stringResource(R.string.candidate_age_years, birthDate.age())
+            )
+        }.orEmpty()
+        val salaryValue = candidate?.salary?.let { salaryFormatter.format(it) }.orEmpty()
+        val salaryHint = candidate?.salary?.let {
+            stringResource(R.string.candidate_details_salary_hint, salaryFormatter.format(it / 1000))
+        }.orEmpty()
 
-            Button(onClick = onBackClick) {
-                Text(text = "Back")
+        Column(
+            Modifier
+                .padding(innerPadding)
+                .padding(padding)
+                .fillMaxWidth()
+                .verticalScroll(scrollState)
+        ) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
+                AsyncImage(
+                    model = candidate?.pictureUrl,
+                    contentDescription = stringResource(R.string.candidate_picture),
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Color.White
+                        )
+                        .size(200.dp)
+
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .padding(top = 24.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            )
+            {
+                CTAContent(
+                    icon = Icons.Default.Phone,
+                    detail = stringResource(R.string.cta_call),
+                    onClick = {
+                        // phone call
+                        val phoneNumber = candidate?.phone ?: return@CTAContent
+                        println("Initiating phone call to $phoneNumber")
+                    }
+                )
+                CTAContent(
+                    icon = Icons.AutoMirrored.Filled.Message,
+                    detail = stringResource(R.string.cta_sms),
+                    onClick = {
+                        // send SMS
+                        val phoneNumber = candidate?.phone ?: return@CTAContent
+                        println("Initiating SMS to $phoneNumber")
+                    }
+                )
+                CTAContent(
+                    icon = Icons.Filled.Email,
+                    detail = stringResource(R.string.cta_email),
+                    onClick = {
+                        // send email
+                        val email = candidate?.email ?: return@CTAContent
+                        println("Initiating email to $email")
+                     }
+                )
+            }
+
+            DetailCard(
+                title = stringResource(R.string.candidate_details_about),
+                content = birthdayValue,
+                hint = stringResource(R.string.candidate_details_birthday_hint)
+            )
+
+            DetailCard(
+                title = stringResource(R.string.candidate_details_salary_title),
+                content = salaryValue,
+                hint = salaryHint
+            )
+
+            DetailCard(
+                title = stringResource(R.string.candidate_details_notes_title),
+                content = candidate?.note.orEmpty(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun CTAContent(
+    icon: ImageVector,
+    detail: String,
+    onClick: () -> Unit = {}
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+
+    ) {
+        IconButton(
+            modifier = Modifier
+                .size(48.dp)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
+                ),
+            onClick = onClick) {
+            Icon(
+                imageVector = icon,
+                contentDescription = "CTA Icon",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+        Text(
+            text = detail,
+            modifier = Modifier.padding(top = 6.dp),
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun DetailCard(
+    title: String,
+    content: String,
+    hint: String? = null,
+) {
+    Surface(
+        modifier = Modifier
+            .padding(top = 24.dp)
+            .fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shadowElevation = 0.dp,
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = title,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = content,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            if (!hint.isNullOrEmpty()) {
+                Text(
+                    text = hint,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
