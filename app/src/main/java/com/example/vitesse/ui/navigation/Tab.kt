@@ -2,7 +2,7 @@ package com.example.vitesse.ui.navigation
 
 import com.example.vitesse.R
 
-enum class Destination(
+enum class Tab(
     val route: String,
     val label: Int,
 ) {

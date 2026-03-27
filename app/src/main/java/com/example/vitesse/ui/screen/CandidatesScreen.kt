@@ -28,7 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.vitesse.data.entity.Candidate
-import com.example.vitesse.ui.navigation.Destination
+import com.example.vitesse.ui.extension.displayFirstName
+import com.example.vitesse.ui.extension.displayLastName
+import com.example.vitesse.ui.navigation.Tab as CandidateTab
 import java.util.Locale
 import java.util.Locale.getDefault
 
@@ -37,20 +39,20 @@ import java.util.Locale.getDefault
 fun CandidatesScreen(
     modifier: Modifier = Modifier,
     candidates: List<Candidate> = emptyList(),
-    selectedTab: Destination,
-    onTabSelected: (Destination) -> Unit,
+    selectedTab: CandidateTab,
+    onTabSelected: (CandidateTab) -> Unit,
     onCandidateClick: (Int) -> Unit,
 ) {
     val displayedCandidates = when (selectedTab) {
-        Destination.ALL -> candidates
-        Destination.FAV -> candidates.filter { it.isFavorite }
+        CandidateTab.ALL -> candidates
+        CandidateTab.FAV -> candidates.filter { it.isFavorite }
     }
 
     Column(modifier = modifier) {
         PrimaryTabRow(selectedTabIndex = selectedTab.ordinal) {
-            Destination.entries.forEachIndexed { index, destination ->
+            CandidateTab.entries.forEach { destination ->
                 Tab(
-                    selected = selectedTab.ordinal == index,
+                    selected = selectedTab == destination,
                     onClick = { onTabSelected(destination) },
                     text = {
                         Text(
@@ -112,17 +114,11 @@ fun CandidatesList(
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(
-                            text = candidate.firstName.replaceFirstChar {
-                                if (it.isLowerCase()) {
-                                    it.titlecase(Locale.ROOT)
-                                } else {
-                                    it.toString()
-                                }
-                            },
+                            text = candidate.displayFirstName(),
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = candidate.lastName.uppercase(getDefault()),
+                            text = candidate.displayLastName(),
                             fontWeight = FontWeight.Bold
                         )
                     }

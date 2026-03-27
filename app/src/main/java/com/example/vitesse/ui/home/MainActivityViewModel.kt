@@ -15,16 +15,19 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val candidateRepository: CandidateRepository
 ) : ViewModel() {
-    private val _candidateState = MutableStateFlow<List<Candidate>>(emptyList())
-    val candidateState: StateFlow<List<Candidate>> = _candidateState
+    private val _candidatesState = MutableStateFlow<List<Candidate>>(emptyList())
+    val candidatesState: StateFlow<List<Candidate>> = _candidatesState
 
     private val _searchResultState = MutableStateFlow<List<Candidate>>(emptyList())
     val searchResultState : StateFlow<List<Candidate>> = _searchResultState
 
+    private val _candidateState = MutableStateFlow<Candidate?>(null)
+    val candidateState: StateFlow<Candidate?> = _candidateState
+
     fun fetchCandidates() {
         viewModelScope.launch(Dispatchers.IO) {
             candidateRepository.getAllCandidates().collect { candidates ->
-                _candidateState.value = candidates
+                _candidatesState.value = candidates
             }
         }
     }
@@ -37,6 +40,13 @@ class MainActivityViewModel @Inject constructor(
             }
             val results = candidateRepository.getCandidatesBySearch(query)
             _searchResultState.value = results
+        }
+    }
+
+    fun getCandidateById(candidateId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = candidateRepository.getCandidateById(candidateId)
+            _candidateState.value = result
         }
     }
 
