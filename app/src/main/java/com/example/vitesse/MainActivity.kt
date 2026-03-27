@@ -107,11 +107,20 @@ fun CandidatesNavHost(
         composable(
             route = Screen.CandidateDetails.route,
             arguments = Screen.CandidateDetails.navArguments
-        ) {
+        ) { backStackEntry ->
+            val candidateId = backStackEntry.arguments?.getString("candidateId") ?: return@composable
+            val candidate = viewModel.candidateState.collectAsState().value
+
+            LaunchedEffect(candidateId) {
+                viewModel.getCandidateById(candidateId)
+            }
+
             CandidateDetailsScreen(
-                candidateId = it.arguments?.getString("candidateId") ?: "",
+                candidate = candidate,
                 onBackClick = { navHostController.navigateUp() },
-                viewModel = viewModel
+                onEditClick = { println("Edit click for candidate ID: $candidateId") },
+                onRemoveClick = { println("Remove click for candidate ID: $candidateId") },
+                onFavoriteClick = { println("Favorite clicked for candidate ID: $candidateId") }
             )
         }
     }
