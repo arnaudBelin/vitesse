@@ -26,6 +26,7 @@ import com.example.vitesse.ui.component.SimpleSearchBar
 import com.example.vitesse.ui.home.MainActivityViewModel
 import com.example.vitesse.ui.navigation.Screen
 import com.example.vitesse.ui.navigation.Tab
+import com.example.vitesse.ui.screen.CandidateAddOrUpdateScreen
 import com.example.vitesse.ui.screen.CandidateDetailsScreen
 import com.example.vitesse.ui.screen.CandidatesScreen
 import com.example.vitesse.ui.theme.VitesseTheme
@@ -108,7 +109,8 @@ fun CandidatesNavHost(
             route = Screen.CandidateDetails.route,
             arguments = Screen.CandidateDetails.navArguments
         ) { backStackEntry ->
-            val candidateId = backStackEntry.arguments?.getString("candidateId") ?: return@composable
+            val candidateId =
+                backStackEntry.arguments?.getString("candidateId") ?: return@composable
             val candidate = viewModel.candidateState.collectAsState().value
 
             LaunchedEffect(candidateId) {
@@ -118,9 +120,29 @@ fun CandidatesNavHost(
             CandidateDetailsScreen(
                 candidate = candidate,
                 onBackClick = { navHostController.navigateUp() },
-                onEditClick = { println("Edit click for candidate ID: $candidateId") },
+                onEditClick = {
+                    navHostController.navigate(
+                        Screen.AddOrUpdateCandidate.createRoute(candidateId)
+                    )
+                },
                 onRemoveClick = { println("Remove click for candidate ID: $candidateId") },
                 onFavoriteClick = { println("Favorite clicked for candidate ID: $candidateId") }
+            )
+        }
+        composable(
+            route = Screen.AddOrUpdateCandidate.route
+        ) { backStackEntry ->
+            val candidateId = backStackEntry.arguments?.getString("candidateId")
+            val candidate = viewModel.candidateState.collectAsState().value
+
+            candidateId?.let {
+                LaunchedEffect(candidateId) {
+                    viewModel.getCandidateById(candidateId)
+                }
+            }
+
+            CandidateAddOrUpdateScreen(
+                candidate = candidate,
             )
         }
     }

@@ -18,4 +18,21 @@ sealed class Screen(
     ) {
         fun createRoute(candidateId: String) = "candidateDetails/$candidateId"
     }
+
+    data object AddOrUpdateCandidate : Screen(
+        route = "addOrEditCandidate?candidateId={candidateId}",
+        navArguments = listOf(navArgument("candidateId") {
+            type = NavType.StringType
+            nullable = true
+            defaultValue = null
+        })
+    ) {
+        fun createRoute(candidateId: String? = null): String {
+            return if (candidateId == null) {
+                "addOrEditCandidate"
+            } else {
+                "addOrEditCandidate?candidateId=$candidateId"
+            }
+        }
+    }
 }
