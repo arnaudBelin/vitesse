@@ -7,6 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -89,6 +96,19 @@ fun CandidatesNavHost(
                         modifier = Modifier.padding(16.dp)
                     )
                 },
+                floatingActionButtonPosition = FabPosition.End,
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = {
+                            navHostController.navigate(Screen.AddOrUpdateCandidate.createRoute(null))
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = "Add Candidate",
+                        )
+                    }
+                }
             ) { innerPadding ->
                 CandidatesScreen(
                     modifier = Modifier.padding(innerPadding),
@@ -143,6 +163,10 @@ fun CandidatesNavHost(
 
             CandidateAddOrUpdateScreen(
                 candidate = candidate,
+                onBackClick = { navHostController.navigateUp() },
+                onSaveClick = { salary ->
+                    println("Save click for candidate ID: ${candidate?.id}, salary: $salary")
+                }
             )
         }
     }
