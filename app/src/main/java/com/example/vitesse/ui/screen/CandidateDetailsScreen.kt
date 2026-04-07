@@ -1,8 +1,6 @@
 package com.example.vitesse.ui.screen
 
-import android.R.attr.data
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -53,13 +51,12 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.vitesse.R
 import com.example.vitesse.data.entity.Candidate
-import com.example.vitesse.ui.extension.age
-import com.example.vitesse.ui.extension.displayFirstName
-import com.example.vitesse.ui.extension.displayLastName
-import com.example.vitesse.ui.extension.toLocalizedDisplayDate
+import com.example.vitesse.utils.age
+import com.example.vitesse.utils.displayFirstName
+import com.example.vitesse.utils.displayLastName
+import com.example.vitesse.utils.toLocalizedDisplayDate
 import java.text.NumberFormat
 import java.util.Currency
-import java.util.Locale
 import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)

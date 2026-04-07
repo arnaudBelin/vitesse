@@ -1,4 +1,4 @@
-package com.example.vitesse.ui.extension
+package com.example.vitesse.utils
 
 import com.example.vitesse.data.entity.Candidate
 import java.util.Locale
