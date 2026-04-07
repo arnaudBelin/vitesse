@@ -186,7 +186,22 @@ fun CandidatesNavHost(
                         }
                     }
                 },
-                onFavoriteClick = { println("Favorite clicked for candidate ID: $candidateId") }
+                onFavoriteClick = {
+                    candidate?.let {
+                        viewModel.toggleFavorite(it)
+                        Toast.makeText(
+                            context,
+                            context.getString(
+                                if (it.isFavorite) {
+                                    R.string.candidate_favorite_removed
+                                } else {
+                                    R.string.candidate_favorite_added
+                                }
+                            ),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             )
         }
         composable(

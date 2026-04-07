@@ -56,6 +56,14 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun toggleFavorite(candidate: Candidate) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedCandidate = candidate.copy(isFavorite = !candidate.isFavorite)
+            candidateRepository.addOrUpdateCandidate(updatedCandidate)
+            _candidateState.value = updatedCandidate
+        }
+    }
+
     fun deleteCandidate(candidate: Candidate) {
         viewModelScope.launch(Dispatchers.IO) {
             candidateRepository.deleteCandidate(candidate)

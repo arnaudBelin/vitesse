@@ -25,6 +25,8 @@
     <string name="candidate_deleted">Candidat supprimé</string>
     <string name="candidate_created">Candidat sauvegardé</string>
     <string name="candidate_updated">Candidat modifié</string>
+    <string name="candidate_favorite_added">Candidat ajouté aux favoris</string>
+    <string name="candidate_favorite_removed">Candidat retiré des favoris</string>
     <string name="candidate_form_title_add">Ajouter un candidat</string>
     <string name="candidate_form_title_edit">Modifier un candidat</string>
     <string name="action_save">Sauvegarder</string>
