@@ -19,8 +19,16 @@
     <string name="candidate_details_salary_hint">Soit %1$s</string>
     <string name="candidate_details_notes_title">Notes</string>
     <string name="candidate_not_found">Candidat introuvable</string>
+    <string name="candidate_add_content_description">Ajouter un candidat</string>
+    <string name="candidate_delete_confirmation">Voulez-vous vraiment supprimer ce candidat ?</string>
+    <string name="candidate_delete_action">Supprimer</string>
+    <string name="candidate_deleted">Candidat supprimé</string>
+    <string name="candidate_created">Candidat sauvegardé</string>
+    <string name="candidate_updated">Candidat modifié</string>
     <string name="candidate_form_title_add">Ajouter un candidat</string>
+    <string name="candidate_form_title_edit">Modifier un candidat</string>
     <string name="action_save">Sauvegarder</string>
+    <string name="action_update">Modifier</string>
     <string name="action_confirm">OK</string>
     <string name="action_cancel">Annuler</string>
     <string name="candidate_form_first_name">Prénom</string>
@@ -34,7 +42,9 @@
     <string name="candidate_error_first_name_required">Le prénom est obligatoire</string>
     <string name="candidate_error_last_name_required">Le nom est obligatoire</string>
     <string name="candidate_error_phone_required">Le téléphone est obligatoire</string>
+    <string name="candidate_error_phone_invalid">Le téléphone est invalide</string>
     <string name="candidate_error_email_required">L\'email est obligatoire</string>
+    <string name="candidate_error_email_invalid">L\'email est invalide</string>
     <string name="candidate_error_birth_date_required">La date de naissance est obligatoire</string>
     <string name="candidate_error_birth_date_adult">Le candidat doit être majeur</string>
     <string name="candidate_error_salary_required">Le salaire est obligatoire</string>

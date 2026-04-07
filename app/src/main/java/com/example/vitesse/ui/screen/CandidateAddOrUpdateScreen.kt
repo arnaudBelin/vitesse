@@ -1,5 +1,6 @@
 package com.example.vitesse.ui.screen
 
+import android.util.Patterns
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,7 +53,7 @@ import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-private data class CandidateFormState(
+data class CandidateFormState(
     val firstName: String = "",
     val lastName: String = "",
     val phone: String = "",
@@ -75,8 +76,16 @@ private fun validateInputs(formState: CandidateFormState): CandidateFormErrors {
     return CandidateFormErrors(
         firstName = if (formState.firstName.isBlank()) R.string.candidate_error_first_name_required else null,
         lastName = if (formState.lastName.isBlank()) R.string.candidate_error_last_name_required else null,
-        phone = if (formState.phone.isBlank()) R.string.candidate_error_phone_required else null,
-        email = if (formState.email.isBlank()) R.string.candidate_error_email_required else null,
+        phone = when {
+            formState.phone.isBlank() -> R.string.candidate_error_phone_required
+            !Patterns.PHONE.matcher(formState.phone).matches() -> R.string.candidate_error_phone_invalid
+            else -> null
+        },
+        email = when {
+            formState.email.isBlank() -> R.string.candidate_error_email_required
+            !Patterns.EMAIL_ADDRESS.matcher(formState.email).matches() -> R.string.candidate_error_email_invalid
+            else -> null
+        },
         birthDate = when {
             formState.birthDate.isBlank() -> R.string.candidate_error_birth_date_required
             LocalDate.parse(formState.birthDate).isAfter(LocalDate.now().minusYears(18)) ->
@@ -161,8 +170,10 @@ private fun CandidateFormField(
 fun CandidateAddOrUpdateScreen(
     candidate: Candidate?,
     onBackClick: () -> Unit,
-    onSaveClick: (Double) -> Unit,
+    onSaveClick: (CandidateFormState) -> Unit,
 ) {
+
+    val editMode = candidate != null
 
     // State
     var firstName by rememberSaveable { mutableStateOf(candidate?.firstName ?: "") }
@@ -174,6 +185,7 @@ fun CandidateAddOrUpdateScreen(
     var note by rememberSaveable { mutableStateOf(candidate?.note ?: "") }
     var formErrors by remember { mutableStateOf(CandidateFormErrors()) }
     var showBirthDatePicker by remember { mutableStateOf(false) }
+    val isEditMode = candidate != null
 
     val birthDatePickerState = rememberDatePickerState(
         initialSelectedDateMillis = birthDateToMillis(birthDate)
@@ -184,7 +196,13 @@ fun CandidateAddOrUpdateScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.candidate_form_title_add),
+                        text = stringResource(
+                            if (isEditMode) {
+                                R.string.candidate_form_title_edit
+                            } else {
+                                R.string.candidate_form_title_add
+                            }
+                        ),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 },
@@ -213,11 +231,19 @@ fun CandidateAddOrUpdateScreen(
                     )
                     formErrors = validateInputs(formState)
                     if (formErrors == CandidateFormErrors()) {
-                        onSaveClick(salary.toDouble())
+                        onSaveClick(formState)
                     }
                 }
             ) {
-                Text(text = stringResource(R.string.action_save))
+                Text(
+                    text = stringResource(
+                        if (isEditMode) {
+                            R.string.action_update
+                        } else {
+                            R.string.action_save
+                        }
+                    )
+                )
             }
         }
     ) { innerPadding ->

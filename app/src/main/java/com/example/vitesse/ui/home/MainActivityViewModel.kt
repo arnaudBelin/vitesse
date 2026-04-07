@@ -50,6 +50,18 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun addOrUpdateCandidate(candidate: Candidate) {
+        viewModelScope.launch(Dispatchers.IO) {
+            candidateRepository.addOrUpdateCandidate(candidate)
+        }
+    }
+
+    fun deleteCandidate(candidate: Candidate) {
+        viewModelScope.launch(Dispatchers.IO) {
+            candidateRepository.deleteCandidate(candidate)
+        }
+    }
+
     init {
         fetchCandidates()
     }
