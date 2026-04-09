@@ -1,9 +1,15 @@
 package com.example.vitesse.ui.screen
 
+import android.content.Intent
+import android.util.Log
 import android.util.Patterns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -39,13 +45,25 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.vitesse.R
 import com.example.vitesse.data.entity.Candidate
 import java.time.Instant
@@ -54,6 +72,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 data class CandidateFormState(
+    val pictureUri: String? = null,
     val firstName: String = "",
     val lastName: String = "",
     val phone: String = "",
@@ -172,10 +191,10 @@ fun CandidateAddOrUpdateScreen(
     onBackClick: () -> Unit,
     onSaveClick: (CandidateFormState) -> Unit,
 ) {
-
-    val editMode = candidate != null
+    val context = LocalContext.current
 
     // State
+    var pictureUri by rememberSaveable { mutableStateOf(candidate?.pictureUri) }
     var firstName by rememberSaveable { mutableStateOf(candidate?.firstName ?: "") }
     var lastName by rememberSaveable { mutableStateOf(candidate?.lastName ?: "") }
     var phone by rememberSaveable { mutableStateOf(candidate?.phone ?: "") }
@@ -190,6 +209,27 @@ fun CandidateAddOrUpdateScreen(
     val birthDatePickerState = rememberDatePickerState(
         initialSelectedDateMillis = birthDateToMillis(birthDate)
     )
+
+    val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        if (uri != null) {
+            runCatching {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }.onFailure { error ->
+                Log.w("PhotoPicker", "Unable to persist read permission for selected media", error)
+            }
+            pictureUri = uri.toString()
+        } else {
+            Log.d("PhotoPicker", "No media selected")
+        }
+    }
+    val onPictureClick = {
+        pickMedia.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -221,6 +261,7 @@ fun CandidateAddOrUpdateScreen(
             ExtendedFloatingActionButton(
                 onClick = {
                     val formState = CandidateFormState(
+                        pictureUri = pictureUri,
                         firstName = firstName,
                         lastName = lastName,
                         phone = phone,
@@ -287,6 +328,39 @@ fun CandidateAddOrUpdateScreen(
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
         ) {
+            // picture
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(
+                        if (pictureUri == null) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            Color.White
+                        }
+                    )
+                    .clickable(onClick = onPictureClick),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (pictureUri == null) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = stringResource(R.string.candidate_picture),
+                        tint = Color.White,
+                        modifier = Modifier.size(96.dp)
+                    )
+                } else {
+                    AsyncImage(
+                        model = pictureUri,
+                        contentDescription = stringResource(R.string.candidate_picture),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
             // firstName
             CandidateFormField(
                 value = firstName,

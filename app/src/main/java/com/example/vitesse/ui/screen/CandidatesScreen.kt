@@ -83,7 +83,7 @@ fun CandidatesList(
                     .padding(16.dp),
                 verticalAlignment = Alignment.Top,
             ) {
-                if (candidate.pictureUrl.isNullOrEmpty()) {
+                if (candidate.pictureUri.isNullOrEmpty()) {
                     Box(
                         modifier = Modifier
                             .size(70.dp)
@@ -99,7 +99,7 @@ fun CandidatesList(
                     }
                 } else {
                     AsyncImage(
-                        model = candidate.pictureUrl,
+                        model = candidate.pictureUri,
                         contentDescription = "Candidate Picture",
                         modifier = Modifier.size(70.dp)
                     )
