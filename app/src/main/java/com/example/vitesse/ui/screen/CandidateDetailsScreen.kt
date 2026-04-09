@@ -145,7 +145,7 @@ fun CandidateDetailsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
-                if (candidate?.pictureUrl.isNullOrEmpty()) {
+                if (candidate?.pictureUri.isNullOrEmpty()) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -162,7 +162,7 @@ fun CandidateDetailsScreen(
                     }
                 } else {
                     AsyncImage(
-                        model = candidate?.pictureUrl,
+                        model = candidate?.pictureUri,
                         contentDescription = stringResource(R.string.candidate_picture),
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
