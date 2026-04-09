@@ -7,8 +7,11 @@ import javax.inject.Inject
 
 class CandidateRepository @Inject constructor(private val candidateDao: CandidateDao) {
 
-    suspend fun getCandidateById(id: Int): Candidate? =
-        candidateDao.getCandidateById(id)
+    suspend fun getCandidateById(id: String): Candidate? =
+        candidateDao.getCandidateById(id.toInt())
+
+    suspend fun getCandidatesBySearch(query: String): List<Candidate> =
+        candidateDao.getCandidatesBySearch(query)
 
     fun getAllCandidates(): Flow<List<Candidate>> =
         candidateDao.getAllCandidates()

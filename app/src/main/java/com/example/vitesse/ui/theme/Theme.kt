@@ -15,6 +15,9 @@ private val DarkColorScheme = darkColorScheme(
     primaryContainer = Blue,
     onPrimary = White,
 
+    surfaceContainer = Coral,
+    surface = Coral,
+
     secondary = Gold,
     secondaryContainer = Gold,
     onSecondary = White
@@ -42,7 +45,7 @@ private val LightColorScheme = lightColorScheme(
 fun VitesseTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
