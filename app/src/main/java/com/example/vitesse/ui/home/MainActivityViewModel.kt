@@ -34,7 +34,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun searchCandidates(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (query.isBlank()) {
+            if (query.isBlank() || query.length < 3) {
                 _searchResultState.value = emptyList()
                 return@launch
             }
