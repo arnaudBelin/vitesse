@@ -232,7 +232,7 @@ fun CandidatesNavHost(
                             birthDate = LocalDate.parse(formState.birthDate),
                             salary = formState.salary.toDoubleOrNull(),
                             note = formState.note.ifBlank { null },
-                            pictureUri = candidate?.pictureUri,
+                            pictureUri = formState.pictureUri,
                             isFavorite = candidate?.isFavorite ?: false,
                             createdAt = candidate?.createdAt ?: Instant.now()
                         )
