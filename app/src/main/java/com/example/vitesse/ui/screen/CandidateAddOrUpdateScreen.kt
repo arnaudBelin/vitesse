@@ -1,5 +1,6 @@
 package com.example.vitesse.ui.screen
 
+import android.content.Intent
 import android.util.Log
 import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -56,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -189,8 +191,7 @@ fun CandidateAddOrUpdateScreen(
     onBackClick: () -> Unit,
     onSaveClick: (CandidateFormState) -> Unit,
 ) {
-
-    val editMode = candidate != null
+    val context = LocalContext.current
 
     // State
     var pictureUri by rememberSaveable { mutableStateOf(candidate?.pictureUri) }
@@ -211,6 +212,14 @@ fun CandidateAddOrUpdateScreen(
 
     val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
+            runCatching {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }.onFailure { error ->
+                Log.w("PhotoPicker", "Unable to persist read permission for selected media", error)
+            }
             pictureUri = uri.toString()
         } else {
             Log.d("PhotoPicker", "No media selected")
