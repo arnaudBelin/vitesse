@@ -11,9 +11,7 @@ import kotlinx.coroutines.flow.flow
 class CurrencyRepository(private val client: CurrencyClient) {
 
     fun fetchCurrencyData(): Flow<CurrencyModel> = flow {
-        Log.d("ggg", "Starting to fetch currency data $client")
         val result = client.getRates()
-        Log.d("ggg", "Fetched data: $result")
         val model = result.toCurrencyModel()
 
         emit(model)
