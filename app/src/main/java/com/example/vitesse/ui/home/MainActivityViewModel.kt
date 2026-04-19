@@ -3,7 +3,9 @@ package com.example.vitesse.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vitesse.data.entity.Candidate
+import com.example.vitesse.data.model.CurrencyRates
 import com.example.vitesse.data.repository.CandidateRepository
+import com.example.vitesse.data.repository.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val candidateRepository: CandidateRepository
+    private val candidateRepository: CandidateRepository,
+    private val currencyRepository: CurrencyRepository
 ) : ViewModel() {
     private val _candidatesState = MutableStateFlow<List<Candidate>>(emptyList())
     val candidatesState: StateFlow<List<Candidate>> = _candidatesState
@@ -23,6 +26,9 @@ class MainActivityViewModel @Inject constructor(
 
     private val _candidateState = MutableStateFlow<Candidate?>(null)
     val candidateState: StateFlow<Candidate?> = _candidateState
+
+    private val _currencyState = MutableStateFlow<CurrencyRates>(CurrencyRates(gbp = null))
+    val currencyState: StateFlow<CurrencyRates> = _currencyState
 
     fun fetchCandidates() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -70,10 +76,16 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    // Currency
+    fun fetchCurrencyData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            currencyRepository.fetchCurrencyData().collect { currencyModel ->
+                _currencyState.value = currencyModel.rates
+            }
+        }
+    }
+
     init {
         fetchCandidates()
     }
-
-
-
 }

@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -36,6 +35,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.vitesse.data.entity.Candidate
+import com.example.vitesse.data.model.CurrencyRates
 import com.example.vitesse.ui.component.SimpleSearchBar
 import com.example.vitesse.ui.home.MainActivityViewModel
 import com.example.vitesse.ui.navigation.Screen
@@ -83,6 +83,8 @@ fun CandidatesNavHost(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val currencyRates = viewModel.currencyState.collectAsState().value
 
     NavHost(
         navController = navHostController,
@@ -149,10 +151,12 @@ fun CandidatesNavHost(
 
             LaunchedEffect(candidateId) {
                 viewModel.getCandidateById(candidateId)
+                viewModel.fetchCurrencyData()
             }
 
             CandidateDetailsScreen(
                 candidate = candidate,
+                currencyRates = currencyRates as CurrencyRates,
                 snackbarHostState = snackbarHostState,
                 onBackClick = { navHostController.navigateUp() },
                 onEditClick = {

@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -53,18 +52,20 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.vitesse.R
 import com.example.vitesse.data.entity.Candidate
+import androidx.core.net.toUri
+import com.example.vitesse.data.model.CurrencyRates
 import com.example.vitesse.utils.age
 import com.example.vitesse.utils.displayFirstName
 import com.example.vitesse.utils.displayLastName
 import com.example.vitesse.utils.toLocalizedDisplayDate
 import java.text.NumberFormat
 import java.util.Currency
-import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CandidateDetailsScreen(
     candidate: Candidate?,
+    currencyRates: CurrencyRates,
     snackbarHostState: SnackbarHostState,
     onBackClick: () -> Unit,
     onEditClick: () -> Unit,
@@ -120,8 +121,12 @@ fun CandidateDetailsScreen(
     ) { innerPadding ->
         val padding = 16.dp
         val scrollState = rememberScrollState()
-        val salaryFormatter = NumberFormat.getCurrencyInstance().apply {
+        val eurFormatter = NumberFormat.getCurrencyInstance().apply {
             currency = Currency.getInstance("EUR")
+            maximumFractionDigits = 0
+        }
+        val gbpFormatter = NumberFormat.getCurrencyInstance().apply {
+            currency = Currency.getInstance("GBP")
             maximumFractionDigits = 0
         }
         val birthdayValue = candidate?.birthDate?.let { birthDate ->
@@ -131,9 +136,10 @@ fun CandidateDetailsScreen(
                 stringResource(R.string.candidate_age_years, birthDate.age())
             )
         }.orEmpty()
-        val salaryValue = candidate?.salary?.let { salaryFormatter.format(it) }.orEmpty()
+        val salaryValue = candidate?.salary?.let { eurFormatter.format(it) }.orEmpty()
         val salaryHint = candidate?.salary?.let {
-            stringResource(R.string.candidate_details_salary_hint, salaryFormatter.format(it / 1000))
+            val gbpRate = currencyRates.gbp ?: return@let null
+            stringResource(R.string.candidate_details_salary_hint, gbpFormatter.format(it * gbpRate))
         }.orEmpty()
 
         Column(
@@ -306,13 +312,12 @@ fun DetailCard(
                 text = content,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            if (!hint.isNullOrEmpty()) {
-                Text(
-                    text = hint,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Text(
+                text = hint ?: " ",
+                minLines = 1,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
