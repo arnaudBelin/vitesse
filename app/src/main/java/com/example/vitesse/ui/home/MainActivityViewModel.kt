@@ -38,13 +38,16 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun searchCandidates(query: String) {
+    fun searchCandidates(query: String, favoritesOnly: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             if (query.isBlank() || query.length < 3) {
                 _searchResultState.value = emptyList()
                 return@launch
             }
-            val results = candidateRepository.getCandidatesBySearch(query)
+            val results = candidateRepository.getCandidatesBySearch(
+                query = query.trim(),
+                favoritesOnly = favoritesOnly
+            )
             _searchResultState.value = results
         }
     }

@@ -178,4 +178,57 @@ class CandidateDaoTest {
             cancel()
         }
     }
+
+    @Test
+    fun testSearchCandidatesShouldOnlyReturnFavoritesWhenFavoritesOnlyIsTrue() = runTest {
+        // Given
+        val candidateOne = Candidate(
+            firstName = "Dave",
+            lastName = "Mustaine",
+            phone = "1234567890",
+            email = "mustaine@example.com",
+            birthDate = LocalDate.of(1990, 3, 10),
+            salary = 5000.0,
+            note = "Favorite matching candidate",
+            isFavorite = true,
+            createdAt = Instant.now()
+        )
+        val candidateTwo = Candidate(
+            firstName = "Dave",
+            lastName = "Lombardo",
+            phone = "0987654321",
+            email = "lombardo@example.com",
+            birthDate = LocalDate.of(1988, 7, 8),
+            salary = 4500.0,
+            note = "Non favorite matching candidate",
+            isFavorite = false,
+            createdAt = Instant.now()
+        )
+        val candidateThree = Candidate(
+            firstName = "Steve",
+            lastName = "Harris",
+            phone = "1111111111",
+            email = "vh@example.com",
+            birthDate = LocalDate.of(1992, 11, 4),
+            salary = 4700.0,
+            note = "Favorite non matching candidate",
+            isFavorite = true,
+            createdAt = Instant.now()
+        )
+
+        database.candidateDao().addOrUpdateCandidate(candidateOne)
+        database.candidateDao().addOrUpdateCandidate(candidateTwo)
+        database.candidateDao().addOrUpdateCandidate(candidateThree)
+
+        // When
+        val results = database.candidateDao().getCandidatesBySearch(
+            query = "Dav",
+            favoritesOnly = true
+        )
+
+        // Then
+        assertEquals(1, results.size)
+        assertEquals("Mustaine", results.single().lastName)
+        assertTrue(results.all { it.isFavorite })
+    }
 }

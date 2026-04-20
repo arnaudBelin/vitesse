@@ -76,8 +76,8 @@ fun CandidatesNavHost(
 ) {
     val startTab = Tab.ALL
     var selectedTab by rememberSaveable { mutableStateOf(startTab) }
-    val searchResults = viewModel.searchResultState.collectAsState(initial = listOf()).value
     val candidates = viewModel.candidatesState.collectAsState(initial = listOf()).value
+    val searchResults = viewModel.searchResultState.collectAsState(initial = listOf()).value
     val textFieldSearch = remember { TextFieldState() }
 
     val context = LocalContext.current
@@ -97,10 +97,16 @@ fun CandidatesNavHost(
                     SimpleSearchBar(
                         textFieldState = textFieldSearch,
                         onSearch = { query ->
-                            viewModel.searchCandidates(query)
+                            viewModel.searchCandidates(
+                                query = query,
+                                favoritesOnly = selectedTab == Tab.FAV
+                            )
                         },
                         onQueryChange = { query ->
-                            viewModel.searchCandidates(query)
+                            viewModel.searchCandidates(
+                                query = query,
+                                favoritesOnly = selectedTab == Tab.FAV
+                            )
                         },
                         searchResults = searchResults,
                         onResultClick = { candidateId ->
@@ -132,6 +138,8 @@ fun CandidatesNavHost(
                     selectedTab = selectedTab,
                     onTabSelected = { tab ->
                         selectedTab = tab
+                        textFieldSearch.edit { replace(0, length, "") }
+                        viewModel.searchCandidates("")
                     },
                     onCandidateClick = { candidateId ->
                         navHostController.navigate(

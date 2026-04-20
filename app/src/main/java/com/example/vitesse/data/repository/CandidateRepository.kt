@@ -10,8 +10,8 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
     suspend fun getCandidateById(id: String): Candidate? =
         candidateDao.getCandidateById(id.toInt())
 
-    suspend fun getCandidatesBySearch(query: String): List<Candidate> =
-        candidateDao.getCandidatesBySearch(query)
+    suspend fun getCandidatesBySearch(query: String, favoritesOnly: Boolean): List<Candidate> =
+        candidateDao.getCandidatesBySearch(query, favoritesOnly)
 
     fun getAllCandidates(): Flow<List<Candidate>> =
         candidateDao.getAllCandidates()
