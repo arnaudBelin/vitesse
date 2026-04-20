@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,6 +51,12 @@ fun CandidatesScreen(
         PrimaryTabRow(selectedTabIndex = selectedTab.ordinal) {
             CandidateTab.entries.forEach { destination ->
                 Tab(
+                    modifier = Modifier.testTag(
+                        when (destination) {
+                            CandidateTab.ALL -> "all_tab"
+                            CandidateTab.FAV -> "favorite_tab"
+                        }
+                    ),
                     selected = selectedTab == destination,
                     onClick = { onTabSelected(destination) },
                     text = {
