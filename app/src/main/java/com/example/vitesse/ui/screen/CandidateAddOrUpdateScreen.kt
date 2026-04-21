@@ -19,11 +19,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.EuroSymbol
-import androidx.compose.material.icons.outlined.PermIdentity
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -34,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -71,6 +72,13 @@ import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
+private val selectablePastAndPresentDates = object : SelectableDates {
+    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+        return utcTimeMillis <= System.currentTimeMillis()
+    }
+}
+
 data class CandidateFormState(
     val pictureUri: String? = null,
     val firstName: String = "",
@@ -93,20 +101,20 @@ private data class CandidateFormErrors(
 
 private fun validateInputs(formState: CandidateFormState): CandidateFormErrors {
     return CandidateFormErrors(
-        firstName = if (formState.firstName.isBlank()) R.string.candidate_error_first_name_required else null,
-        lastName = if (formState.lastName.isBlank()) R.string.candidate_error_last_name_required else null,
+        firstName = if (formState.firstName.isBlank()) R.string.candidate_error_required else null,
+        lastName = if (formState.lastName.isBlank()) R.string.candidate_error_required else null,
         phone = when {
-            formState.phone.isBlank() -> R.string.candidate_error_phone_required
+            formState.phone.isBlank() -> R.string.candidate_error_required
             !Patterns.PHONE.matcher(formState.phone).matches() -> R.string.candidate_error_phone_invalid
             else -> null
         },
         email = when {
-            formState.email.isBlank() -> R.string.candidate_error_email_required
-            !Patterns.EMAIL_ADDRESS.matcher(formState.email).matches() -> R.string.candidate_error_email_invalid
+            formState.email.isBlank() -> R.string.candidate_error_required
+            !Patterns.EMAIL_ADDRESS.matcher(formState.email).matches() -> R.string.candidate_error_invalid_format
             else -> null
         },
         birthDate = when {
-            formState.birthDate.isBlank() -> R.string.candidate_error_birth_date_required
+            formState.birthDate.isBlank() -> R.string.candidate_error_required
             LocalDate.parse(formState.birthDate).isAfter(LocalDate.now().minusYears(18)) ->
                 R.string.candidate_error_birth_date_adult
             else -> null
@@ -207,7 +215,8 @@ fun CandidateAddOrUpdateScreen(
     val isEditMode = candidate != null
 
     val birthDatePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = birthDateToMillis(birthDate)
+        initialSelectedDateMillis = birthDateToMillis(birthDate),
+        selectableDates = selectablePastAndPresentDates
     )
 
     val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -368,7 +377,7 @@ fun CandidateAddOrUpdateScreen(
                     firstName = it
                 },
                 labelRes = R.string.candidate_form_first_name,
-                icon = Icons.Outlined.PermIdentity,
+                icon = Icons.Filled.People,
                 errorMessageRes = formErrors.firstName,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             )
@@ -429,7 +438,7 @@ fun CandidateAddOrUpdateScreen(
                     salary = it
                 },
                 labelRes = R.string.candidate_form_salary_expectations,
-                icon = Icons.Outlined.EuroSymbol,
+                icon = Icons.Filled.AttachMoney,
                 errorMessageRes = formErrors.salary,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             )

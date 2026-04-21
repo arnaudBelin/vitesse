@@ -41,13 +41,9 @@
     <string name="candidate_form_birth_date_select">Sélectionner une date</string>
     <string name="candidate_form_salary_expectations">Prétentions salariales</string>
     <string name="candidate_form_note">Note</string>
-    <string name="candidate_error_first_name_required">Le prénom est obligatoire</string>
-    <string name="candidate_error_last_name_required">Le nom est obligatoire</string>
-    <string name="candidate_error_phone_required">Le téléphone est obligatoire</string>
+    <string name="candidate_error_required">Champ obligatoire</string>
     <string name="candidate_error_phone_invalid">Le téléphone est invalide</string>
-    <string name="candidate_error_email_required">L\'email est obligatoire</string>
-    <string name="candidate_error_email_invalid">L\'email est invalide</string>
-    <string name="candidate_error_birth_date_required">La date de naissance est obligatoire</string>
+    <string name="candidate_error_invalid_format">Format invalide</string>
     <string name="candidate_error_birth_date_adult">Le candidat doit être majeur</string>
     <string name="candidate_error_salary_required">Le salaire est obligatoire</string>
     <string name="candidate_error_salary_invalid">Le salaire est invalide</string>
