@@ -6,12 +6,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -49,10 +49,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.vitesse.R
 import com.example.vitesse.data.entity.Candidate
-import androidx.core.net.toUri
 import com.example.vitesse.data.model.CurrencyRates
 import com.example.vitesse.utils.age
 import com.example.vitesse.utils.displayFirstName
@@ -78,95 +78,106 @@ fun CandidateDetailsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "${candidate?.displayFirstName().orEmpty()} ${candidate?.displayLastName().orEmpty()}".trim(),
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        text =
+                            "${candidate?.displayFirstName().orEmpty()} ${candidate?.displayLastName().orEmpty()}"
+                                .trim(),
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.action_back)
+                            contentDescription = stringResource(R.string.action_back),
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = onFavoriteClick) {
                         Icon(
-                            imageVector = if (candidate?.isFavorite == true) Icons.Filled.Star else Icons.Filled.StarBorder,
+                            imageVector =
+                                if (candidate?.isFavorite == true) Icons.Filled.Star
+                                else Icons.Filled.StarBorder,
                             contentDescription = stringResource(R.string.action_favorite),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                     IconButton(onClick = onEditClick) {
                         Icon(
                             imageVector = Icons.Outlined.Edit,
                             contentDescription = stringResource(R.string.action_edit),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                     IconButton(onClick = onRemoveClick) {
                         Icon(
                             imageVector = Icons.Outlined.Delete,
                             contentDescription = stringResource(R.string.action_delete),
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
-                }
+                },
             )
         },
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
         val padding = 16.dp
         val scrollState = rememberScrollState()
-        val eurFormatter = NumberFormat.getCurrencyInstance().apply {
-            currency = Currency.getInstance("EUR")
-            maximumFractionDigits = 0
-        }
-        val gbpFormatter = NumberFormat.getCurrencyInstance().apply {
-            currency = Currency.getInstance("GBP")
-            maximumFractionDigits = 0
-        }
-        val birthdayValue = candidate?.birthDate?.let { birthDate ->
-            stringResource(
-                R.string.candidate_details_birthday_value,
-                birthDate.toLocalizedDisplayDate(),
-                stringResource(R.string.candidate_age_years, birthDate.age())
-            )
-        }.orEmpty()
+        val eurFormatter =
+            NumberFormat.getCurrencyInstance().apply {
+                currency = Currency.getInstance("EUR")
+                maximumFractionDigits = 0
+            }
+        val gbpFormatter =
+            NumberFormat.getCurrencyInstance().apply {
+                currency = Currency.getInstance("GBP")
+                maximumFractionDigits = 0
+            }
+        val birthdayValue =
+            candidate
+                ?.birthDate
+                ?.let { birthDate ->
+                    stringResource(
+                        R.string.candidate_details_birthday_value,
+                        birthDate.toLocalizedDisplayDate(),
+                        stringResource(R.string.candidate_age_years, birthDate.age()),
+                    )
+                }
+                .orEmpty()
         val salaryValue = candidate?.salary?.let { eurFormatter.format(it) }.orEmpty()
-        val salaryHint = candidate?.salary?.let {
-            val gbpRate = currencyRates.gbp ?: return@let null
-            stringResource(R.string.candidate_details_salary_hint, gbpFormatter.format(it * gbpRate))
-        }.orEmpty()
+        val salaryHint =
+            candidate
+                ?.salary
+                ?.let {
+                    val gbpRate = currencyRates.gbp ?: return@let null
+                    stringResource(
+                        R.string.candidate_details_salary_hint,
+                        gbpFormatter.format(it * gbpRate),
+                    )
+                }
+                .orEmpty()
 
         Column(
-            Modifier
-                .padding(innerPadding)
+            Modifier.padding(innerPadding)
                 .padding(padding)
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
+            Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(4.dp)) {
                 if (candidate?.pictureUri.isNullOrEmpty()) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(MaterialTheme.shapes.medium)
-                            .background(MaterialTheme.colorScheme.primary),
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .height(200.dp)
+                                .clip(MaterialTheme.shapes.medium)
+                                .background(MaterialTheme.colorScheme.primary),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = stringResource(R.string.candidate_picture),
                             tint = Color.White,
-                            modifier = Modifier.size(96.dp)
+                            modifier = Modifier.size(96.dp),
                         )
                     }
                 } else {
@@ -174,33 +185,29 @@ fun CandidateDetailsScreen(
                         model = candidate?.pictureUri,
                         contentDescription = stringResource(R.string.candidate_picture),
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .clip(MaterialTheme.shapes.medium)
-                            .background(Color.White)
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .height(200.dp)
+                                .clip(MaterialTheme.shapes.medium)
+                                .background(Color.White),
                     )
                 }
             }
 
             Row(
-                modifier = Modifier
-                    .padding(top = 24.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            )
-            {
+                modifier = Modifier.padding(top = 24.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
                 CTAContent(
                     icon = Icons.Default.Phone,
                     detail = stringResource(R.string.cta_call),
                     onClick = {
                         // phone call
                         val phoneNumber = candidate?.phone ?: return@CTAContent
-                        val intent = Intent(Intent.ACTION_DIAL).apply {
-                            data = "tel:$phoneNumber".toUri()
-                        }
+                        val intent =
+                            Intent(Intent.ACTION_DIAL).apply { data = "tel:$phoneNumber".toUri() }
                         context.startActivity(intent)
-                    }
+                    },
                 )
                 CTAContent(
                     icon = Icons.AutoMirrored.Filled.Message,
@@ -208,11 +215,12 @@ fun CandidateDetailsScreen(
                     onClick = {
                         // send SMS
                         val phoneNumber = candidate?.phone ?: return@CTAContent
-                        val intent = Intent(Intent.ACTION_SENDTO).apply {
-                            data = "smsto:$phoneNumber".toUri()
-                        }
+                        val intent =
+                            Intent(Intent.ACTION_SENDTO).apply {
+                                data = "smsto:$phoneNumber".toUri()
+                            }
                         context.startActivity(intent)
-                    }
+                    },
                 )
                 CTAContent(
                     icon = Icons.Filled.Email,
@@ -220,24 +228,23 @@ fun CandidateDetailsScreen(
                     onClick = {
                         // send email
                         val email = candidate?.email ?: return@CTAContent
-                        val intent = Intent(Intent.ACTION_SENDTO).apply {
-                            data = "mailto:$email".toUri()
-                        }
+                        val intent =
+                            Intent(Intent.ACTION_SENDTO).apply { data = "mailto:$email".toUri() }
                         context.startActivity(intent)
-                     }
+                    },
                 )
             }
 
             DetailCard(
                 title = stringResource(R.string.candidate_details_about),
                 content = birthdayValue,
-                hint = stringResource(R.string.candidate_details_birthday_hint)
+                hint = stringResource(R.string.candidate_details_birthday_hint),
             )
 
             DetailCard(
                 title = stringResource(R.string.candidate_details_salary_title),
                 content = salaryValue,
-                hint = salaryHint
+                hint = salaryHint,
             )
 
             DetailCard(
@@ -249,50 +256,40 @@ fun CandidateDetailsScreen(
 }
 
 @Composable
-private fun CTAContent(
-    icon: ImageVector,
-    detail: String,
-    onClick: () -> Unit = {}
-) {
+private fun CTAContent(icon: ImageVector, detail: String, onClick: () -> Unit = {}) {
     Column(
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         IconButton(
-            modifier = Modifier
-                .size(48.dp)
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                ),
-            onClick = onClick) {
+            modifier =
+                Modifier.size(48.dp)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape,
+                    ),
+            onClick = onClick,
+        ) {
             Icon(
                 imageVector = icon,
                 contentDescription = "CTA Icon",
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
         Text(
             text = detail,
             modifier = Modifier.padding(top = 6.dp),
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
         )
     }
 }
 
 @Composable
-fun DetailCard(
-    title: String,
-    content: String,
-    hint: String? = null,
-) {
+fun DetailCard(title: String, content: String, hint: String? = null) {
     Surface(
-        modifier = Modifier
-            .padding(top = 24.dp)
-            .fillMaxWidth(),
+        modifier = Modifier.padding(top = 24.dp).fillMaxWidth(),
         color = MaterialTheme.colorScheme.surfaceVariant,
         shadowElevation = 0.dp,
         shape = MaterialTheme.shapes.medium,
@@ -300,23 +297,20 @@ fun DetailCard(
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
+            horizontalAlignment = Alignment.Start,
         ) {
             Text(
                 text = title,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = content,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Text(text = content, color = MaterialTheme.colorScheme.onSurface)
             Text(
                 text = hint ?: " ",
                 minLines = 1,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

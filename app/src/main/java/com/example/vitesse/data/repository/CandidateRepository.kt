@@ -2,23 +2,22 @@ package com.example.vitesse.data.repository
 
 import com.example.vitesse.data.dao.CandidateDao
 import com.example.vitesse.data.entity.Candidate
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class CandidateRepository @Inject constructor(private val candidateDao: CandidateDao) {
 
-    suspend fun getCandidateById(id: String): Candidate? =
-        candidateDao.getCandidateById(id.toInt())
+    suspend fun getCandidateById(id: String): Candidate? = candidateDao.getCandidateById(id.toInt())
 
-    suspend fun getCandidatesBySearch(query: String): List<Candidate> =
-        candidateDao.getCandidatesBySearch(query)
+    suspend fun getCandidatesBySearch(query: String, favoritesOnly: Boolean): List<Candidate> =
+        candidateDao.getCandidatesBySearch(query, favoritesOnly)
 
-    fun getAllCandidates(): Flow<List<Candidate>> =
-        candidateDao.getAllCandidates()
+    fun getAllCandidates(): Flow<List<Candidate>> = candidateDao.getAllCandidates()
 
     suspend fun addOrUpdateCandidate(candidate: Candidate) {
         candidateDao.addOrUpdateCandidate(candidate)
     }
+
     suspend fun deleteCandidate(candidate: Candidate) {
         candidateDao.deleteCandidate(candidate)
     }

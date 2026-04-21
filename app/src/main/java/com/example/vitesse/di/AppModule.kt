@@ -32,7 +32,8 @@ class AppModule {
                             INSERT INTO Candidate 
                             (first_name, last_name, phone, email, picture_uri, birth_date, salary, note, is_favorite, created_at)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                            """.trimIndent(),
+                            """
+                                .trimIndent(),
                             arrayOf<Any?>(
                                 "John",
                                 "Doe",
@@ -43,8 +44,8 @@ class AppModule {
                                 8000.0,
                                 "A good candidate but expensive",
                                 1,
-                                now
-                            )
+                                now,
+                            ),
                         )
 
                         db.execSQL(
@@ -52,7 +53,8 @@ class AppModule {
                             INSERT INTO Candidate 
                             (first_name, last_name, phone, email, picture_uri, birth_date, salary, note, is_favorite, created_at)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                            """.trimIndent(),
+                            """
+                                .trimIndent(),
                             arrayOf<Any?>(
                                 "Jane",
                                 "Smith",
@@ -63,8 +65,8 @@ class AppModule {
                                 6000.0,
                                 "A promising candidate with a good track record",
                                 0,
-                                now + 1
-                            )
+                                now + 1,
+                            ),
                         )
                     }
                 }
@@ -72,9 +74,5 @@ class AppModule {
             .build()
     }
 
-    @Provides
-    fun provideCandidateDao(database: VitesseDB): CandidateDao =
-        database.candidateDao()
-
-
+    @Provides fun provideCandidateDao(database: VitesseDB): CandidateDao = database.candidateDao()
 }

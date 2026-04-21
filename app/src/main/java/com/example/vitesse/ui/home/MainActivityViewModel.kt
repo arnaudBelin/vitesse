@@ -7,22 +7,24 @@ import com.example.vitesse.data.model.CurrencyRates
 import com.example.vitesse.data.repository.CandidateRepository
 import com.example.vitesse.data.repository.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(
+class MainActivityViewModel
+@Inject
+constructor(
     private val candidateRepository: CandidateRepository,
-    private val currencyRepository: CurrencyRepository
+    private val currencyRepository: CurrencyRepository,
 ) : ViewModel() {
     private val _candidatesState = MutableStateFlow<List<Candidate>>(emptyList())
     val candidatesState: StateFlow<List<Candidate>> = _candidatesState
 
     private val _searchResultState = MutableStateFlow<List<Candidate>>(emptyList())
-    val searchResultState : StateFlow<List<Candidate>> = _searchResultState
+    val searchResultState: StateFlow<List<Candidate>> = _searchResultState
 
     private val _candidateState = MutableStateFlow<Candidate?>(null)
     val candidateState: StateFlow<Candidate?> = _candidateState
@@ -38,13 +40,17 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun searchCandidates(query: String) {
+    fun searchCandidates(query: String, favoritesOnly: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             if (query.isBlank() || query.length < 3) {
                 _searchResultState.value = emptyList()
                 return@launch
             }
-            val results = candidateRepository.getCandidatesBySearch(query)
+            val results =
+                candidateRepository.getCandidatesBySearch(
+                    query = query.trim(),
+                    favoritesOnly = favoritesOnly,
+                )
             _searchResultState.value = results
         }
     }
@@ -71,9 +77,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun deleteCandidate(candidate: Candidate) {
-        viewModelScope.launch(Dispatchers.IO) {
-            candidateRepository.deleteCandidate(candidate)
-        }
+        viewModelScope.launch(Dispatchers.IO) { candidateRepository.deleteCandidate(candidate) }
     }
 
     // Currency
