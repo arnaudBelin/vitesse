@@ -7,14 +7,10 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class CurrencyResponse(
-    @Json(name = "date")
-    val date: String,
-    @Json(name = "eur")
-    val eur: CurrencyRates,
+    @Json(name = "date") val date: String,
+    @Json(name = "eur") val eur: CurrencyRates,
 ) {
     fun toCurrencyModel(): CurrencyModel {
-        return CurrencyModel(
-            rates = eur
-        )
+        return CurrencyModel(rates = eur)
     }
 }

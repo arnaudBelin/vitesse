@@ -19,13 +19,10 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/")
             .addConverterFactory(
-            MoshiConverterFactory.create(
-                Moshi.Builder()
-                    .add(KotlinJsonAdapterFactory())
-                    .build()
+                MoshiConverterFactory.create(
+                    Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                )
             )
-        )
-
             .build()
     }
 
@@ -33,5 +30,4 @@ object NetworkModule {
     fun provideCurrencyClient(retrofit: Retrofit): CurrencyClient {
         return retrofit.create(CurrencyClient::class.java)
     }
-
 }

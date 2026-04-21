@@ -14,14 +14,12 @@ class CurrencyRepositoryTest {
     @Test
     fun testFetchCurrencyDataMappedCurrencyModel() = runTest {
         // Given
-        val fakeClient = object : CurrencyClient {
-            override suspend fun getRates(): CurrencyResponse {
-                return CurrencyResponse(
-                    date = "2025-04-20",
-                    eur = CurrencyRates(gbp = 0.86)
-                )
+        val fakeClient =
+            object : CurrencyClient {
+                override suspend fun getRates(): CurrencyResponse {
+                    return CurrencyResponse(date = "2025-04-20", eur = CurrencyRates(gbp = 0.86))
+                }
             }
-        }
         val repository = CurrencyRepository(fakeClient)
 
         // When / Then

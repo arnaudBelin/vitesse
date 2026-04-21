@@ -3,10 +3,10 @@ package com.example.vitesse
 import com.example.vitesse.data.entity.Candidate
 import com.example.vitesse.utils.displayFirstName
 import com.example.vitesse.utils.displayLastName
-import junit.framework.TestCase.assertEquals
-import org.junit.Test
 import java.time.Instant
 import java.time.LocalDate
+import junit.framework.TestCase.assertEquals
+import org.junit.Test
 
 class CandidateExtensionsTest {
 
@@ -41,8 +41,7 @@ class CandidateExtensionsTest {
             phone = "1234567890",
             email = "exodus@example.com",
             birthDate = LocalDate.of(1990, 1, 1),
-            createdAt = Instant.now()
+            createdAt = Instant.now(),
         )
     }
-
 }

@@ -28,11 +28,7 @@ interface CandidateDao {
     )
     suspend fun getCandidatesBySearch(query: String, favoritesOnly: Boolean): List<Candidate>
 
-    @Upsert
-    suspend fun addOrUpdateCandidate(candidate: Candidate)
+    @Upsert suspend fun addOrUpdateCandidate(candidate: Candidate)
 
-    @Delete
-    suspend fun deleteCandidate(candidate: Candidate)
-
-
+    @Delete suspend fun deleteCandidate(candidate: Candidate)
 }

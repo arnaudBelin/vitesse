@@ -13,20 +13,21 @@ const val DATABASE_VERSION = 1
 
 @Database(entities = [Candidate::class], version = DATABASE_VERSION)
 @TypeConverters(Converters::class)
-abstract class VitesseDB : RoomDatabase()
-{
+abstract class VitesseDB : RoomDatabase() {
     companion object {
-        @Volatile
-        private var INSTANCE: VitesseDB? = null
+        @Volatile private var INSTANCE: VitesseDB? = null
 
         fun getDatabase(context: Context): VitesseDB {
-            return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
-                    context.applicationContext,
-                    VitesseDB::class.java,
-                    "vitesse_db"
-                ).build().also { INSTANCE = it }
-            }
+            return INSTANCE
+                ?: synchronized(this) {
+                    Room.databaseBuilder(
+                            context.applicationContext,
+                            VitesseDB::class.java,
+                            "vitesse_db",
+                        )
+                        .build()
+                        .also { INSTANCE = it }
+                }
         }
     }
 

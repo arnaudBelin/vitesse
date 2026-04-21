@@ -45,9 +45,9 @@ import com.example.vitesse.ui.screen.CandidateDetailsScreen
 import com.example.vitesse.ui.screen.CandidatesScreen
 import com.example.vitesse.ui.theme.VitesseTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -59,21 +59,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navHost = rememberNavController()
-            VitesseTheme {
-                CandidatesNavHost(
-                    navHostController = navHost,
-                    viewModel = viewModel
-                )
-            }
+            VitesseTheme { CandidatesNavHost(navHostController = navHost, viewModel = viewModel) }
         }
     }
 }
 
 @Composable
-fun CandidatesNavHost(
-    navHostController: NavHostController,
-    viewModel: MainActivityViewModel,
-) {
+fun CandidatesNavHost(navHostController: NavHostController, viewModel: MainActivityViewModel) {
     val startTab = Tab.ALL
     var selectedTab by rememberSaveable { mutableStateOf(startTab) }
     val candidates = viewModel.candidatesState.collectAsState(initial = listOf()).value
@@ -86,11 +78,7 @@ fun CandidatesNavHost(
 
     val currencyRates = viewModel.currencyState.collectAsState().value
 
-    NavHost(
-        navController = navHostController,
-        startDestination = Screen.Home.route
-    ) {
-
+    NavHost(navController = navHostController, startDestination = Screen.Home.route) {
         composable(route = Screen.Home.route) {
             Scaffold(
                 topBar = {
@@ -99,13 +87,13 @@ fun CandidatesNavHost(
                         onSearch = { query ->
                             viewModel.searchCandidates(
                                 query = query,
-                                favoritesOnly = selectedTab == Tab.FAV
+                                favoritesOnly = selectedTab == Tab.FAV,
                             )
                         },
                         onQueryChange = { query ->
                             viewModel.searchCandidates(
                                 query = query,
-                                favoritesOnly = selectedTab == Tab.FAV
+                                favoritesOnly = selectedTab == Tab.FAV,
                             )
                         },
                         searchResults = searchResults,
@@ -115,22 +103,25 @@ fun CandidatesNavHost(
                                 Screen.CandidateDetails.createRoute(candidateId.toString())
                             )
                         },
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(16.dp),
                     )
                 },
                 floatingActionButtonPosition = FabPosition.End,
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            navHostController.navigate(Screen.AddOrUpdateCandidate.createRoute(null))
+                            navHostController.navigate(
+                                Screen.AddOrUpdateCandidate.createRoute(null)
+                            )
                         }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Add,
-                            contentDescription = stringResource(R.string.candidate_add_content_description),
+                            contentDescription =
+                                stringResource(R.string.candidate_add_content_description),
                         )
                     }
-                }
+                },
             ) { innerPadding ->
                 CandidatesScreen(
                     modifier = Modifier.padding(innerPadding),
@@ -145,13 +136,13 @@ fun CandidatesNavHost(
                         navHostController.navigate(
                             Screen.CandidateDetails.createRoute(candidateId.toString())
                         )
-                    }
+                    },
                 )
             }
         }
         composable(
             route = Screen.CandidateDetails.route,
-            arguments = Screen.CandidateDetails.navArguments
+            arguments = Screen.CandidateDetails.navArguments,
         ) { backStackEntry ->
             val candidateId =
                 backStackEntry.arguments?.getString("candidateId") ?: return@composable
@@ -168,28 +159,27 @@ fun CandidatesNavHost(
                 snackbarHostState = snackbarHostState,
                 onBackClick = { navHostController.navigateUp() },
                 onEditClick = {
-                    navHostController.navigate(
-                        Screen.AddOrUpdateCandidate.createRoute(candidateId)
-                    )
+                    navHostController.navigate(Screen.AddOrUpdateCandidate.createRoute(candidateId))
                 },
                 onRemoveClick = {
                     scope.launch {
-                        val result = snackbarHostState
-                            .showSnackbar(
+                        val result =
+                            snackbarHostState.showSnackbar(
                                 message = context.getString(R.string.candidate_delete_confirmation),
                                 actionLabel = context.getString(R.string.candidate_delete_action),
                                 withDismissAction = true,
-                                duration = SnackbarDuration.Indefinite
+                                duration = SnackbarDuration.Indefinite,
                             )
                         when (result) {
                             SnackbarResult.ActionPerformed -> {
                                 candidate?.let {
                                     viewModel.deleteCandidate(candidate)
-                                    val toast = Toast.makeText(
-                                        context,
-                                        context.getString(R.string.candidate_deleted),
-                                        Toast.LENGTH_LONG
-                                    )
+                                    val toast =
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.candidate_deleted),
+                                            Toast.LENGTH_LONG,
+                                        )
                                     toast.show()
                                     navHostController.navigateUp()
                                 }
@@ -202,31 +192,28 @@ fun CandidatesNavHost(
                     candidate?.let {
                         viewModel.toggleFavorite(it)
                         Toast.makeText(
-                            context,
-                            context.getString(
-                                if (it.isFavorite) {
-                                    R.string.candidate_favorite_removed
-                                } else {
-                                    R.string.candidate_favorite_added
-                                }
-                            ),
-                            Toast.LENGTH_LONG
-                        ).show()
+                                context,
+                                context.getString(
+                                    if (it.isFavorite) {
+                                        R.string.candidate_favorite_removed
+                                    } else {
+                                        R.string.candidate_favorite_added
+                                    }
+                                ),
+                                Toast.LENGTH_LONG,
+                            )
+                            .show()
                     }
-                }
+                },
             )
         }
-        composable(
-            route = Screen.AddOrUpdateCandidate.route
-        ) { backStackEntry ->
+        composable(route = Screen.AddOrUpdateCandidate.route) { backStackEntry ->
             val candidateId = backStackEntry.arguments?.getString("candidateId")
             val selectedCandidate = viewModel.candidateState.collectAsState().value
             val candidate = if (candidateId == null) null else selectedCandidate
 
             candidateId?.let {
-                LaunchedEffect(candidateId) {
-                    viewModel.getCandidateById(candidateId)
-                }
+                LaunchedEffect(candidateId) { viewModel.getCandidateById(candidateId) }
             }
 
             CandidateAddOrUpdateScreen(
@@ -235,33 +222,35 @@ fun CandidatesNavHost(
                 onSaveClick = { formState ->
                     val isEditMode = candidate != null
                     viewModel.addOrUpdateCandidate(
-                        candidate = Candidate(
-                            id = candidate?.id ?: 0,
-                            firstName = formState.firstName,
-                            lastName = formState.lastName,
-                            phone = formState.phone,
-                            email = formState.email,
-                            birthDate = LocalDate.parse(formState.birthDate),
-                            salary = formState.salary.toDoubleOrNull(),
-                            note = formState.note.ifBlank { null },
-                            pictureUri = formState.pictureUri,
-                            isFavorite = candidate?.isFavorite ?: false,
-                            createdAt = candidate?.createdAt ?: Instant.now()
-                        )
+                        candidate =
+                            Candidate(
+                                id = candidate?.id ?: 0,
+                                firstName = formState.firstName,
+                                lastName = formState.lastName,
+                                phone = formState.phone,
+                                email = formState.email,
+                                birthDate = LocalDate.parse(formState.birthDate),
+                                salary = formState.salary.toDoubleOrNull(),
+                                note = formState.note.ifBlank { null },
+                                pictureUri = formState.pictureUri,
+                                isFavorite = candidate?.isFavorite ?: false,
+                                createdAt = candidate?.createdAt ?: Instant.now(),
+                            )
                     )
                     Toast.makeText(
-                        context,
-                        context.getString(
-                            if (isEditMode) {
-                                R.string.candidate_updated
-                            } else {
-                                R.string.candidate_created
-                            }
-                        ),
-                        Toast.LENGTH_LONG
-                    ).show()
+                            context,
+                            context.getString(
+                                if (isEditMode) {
+                                    R.string.candidate_updated
+                                } else {
+                                    R.string.candidate_created
+                                }
+                            ),
+                            Toast.LENGTH_LONG,
+                        )
+                        .show()
                     navHostController.navigateUp()
-                }
+                },
             )
         }
     }

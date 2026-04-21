@@ -10,14 +10,12 @@ import kotlinx.coroutines.flow.flow
 
 class CurrencyRepository(private val client: CurrencyClient) {
 
-    fun fetchCurrencyData(): Flow<CurrencyModel> = flow {
-        val result = client.getRates()
-        val model = result.toCurrencyModel()
+    fun fetchCurrencyData(): Flow<CurrencyModel> =
+        flow {
+                val result = client.getRates()
+                val model = result.toCurrencyModel()
 
-        emit(model)
-
-        }.catch { error ->
-         Log.e("CurrencyRepository", error.message ?: "")
-        }
-
+                emit(model)
+            }
+            .catch { error -> Log.e("CurrencyRepository", error.message ?: "") }
 }

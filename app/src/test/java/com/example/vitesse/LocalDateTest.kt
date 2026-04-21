@@ -1,11 +1,9 @@
 package com.example.vitesse
 
 import com.example.vitesse.utils.age
-import com.example.vitesse.utils.toLocalizedDisplayDate
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertTrue
-import org.junit.Test
 import java.time.LocalDate
+import junit.framework.TestCase.assertEquals
+import org.junit.Test
 
 class LocalDateTest {
 

@@ -1,3 +1,6 @@
+import com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask
+import com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -8,9 +11,7 @@ plugins {
 
 android {
     namespace = "com.example.vitesse"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk { version = release(36) }
 
     defaultConfig {
         applicationId = "com.example.vitesse"
@@ -27,7 +28,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -35,18 +36,24 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    buildFeatures {
-        compose = true
-    }
+    buildFeatures { compose = true }
 }
 
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
+ksp { arg("room.schemaLocation", "$projectDir/schemas") }
+
+ktfmt { kotlinLangStyle() }
+
+tasks.register<KtfmtFormatTask>("ktfmtFormatSources") {
+    source = fileTree("src") { include("**/*.kt") }
 }
 
-ktfmt {
-    kotlinLangStyle()
+tasks.register<KtfmtCheckTask>("ktfmtCheckSources") {
+    source = fileTree("src") { include("**/*.kt") }
 }
+
+tasks.named("ktfmtFormat") { dependsOn("ktfmtFormatSources") }
+
+tasks.named("ktfmtCheck") { dependsOn("ktfmtCheckSources") }
 
 dependencies {
     implementation(libs.androidx.core.ktx)

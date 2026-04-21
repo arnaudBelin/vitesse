@@ -10,10 +10,7 @@ class CurrencyResponseTest {
     @Test
     fun testToCurrencyModel() {
         // Given
-        val response = CurrencyResponse(
-            date = "2025-04-20",
-            eur = CurrencyRates(gbp = 0.86)
-        )
+        val response = CurrencyResponse(date = "2025-04-20", eur = CurrencyRates(gbp = 0.86))
 
         // When
         val result = response.toCurrencyModel()
