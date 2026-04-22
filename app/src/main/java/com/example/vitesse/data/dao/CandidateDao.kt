@@ -1,0 +1,34 @@
+package com.example.vitesse.data.dao
+
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Query
+import androidx.room.Upsert
+import com.example.vitesse.data.entity.Candidate
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface CandidateDao {
+    @Query("SELECT * FROM Candidate ORDER BY created_at DESC")
+    fun getAllCandidates(): Flow<List<Candidate>>
+
+    @Query("SELECT * FROM Candidate WHERE id = :id")
+    suspend fun getCandidateById(id: Int): Candidate?
+
+    @Query(
+        """
+        SELECT * FROM Candidate
+        WHERE (:favoritesOnly = 0 OR is_favorite = 1)
+        AND (
+            first_name LIKE '%' || :query || '%'
+            OR last_name LIKE '%' || :query || '%'
+        )
+        ORDER BY created_at DESC
+        """
+    )
+    suspend fun getCandidatesBySearch(query: String, favoritesOnly: Boolean): List<Candidate>
+
+    @Upsert suspend fun addOrUpdateCandidate(candidate: Candidate)
+
+    @Delete suspend fun deleteCandidate(candidate: Candidate)
+}
