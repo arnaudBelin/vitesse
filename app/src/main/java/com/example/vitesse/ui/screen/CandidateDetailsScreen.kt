@@ -184,7 +184,7 @@ fun CandidateDetailsScreen(
                     AsyncImage(
                         model = candidate?.pictureUri,
                         contentDescription = stringResource(R.string.candidate_picture),
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Fit,
                         modifier =
                             Modifier.fillMaxWidth()
                                 .height(200.dp)
